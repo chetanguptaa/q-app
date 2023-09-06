@@ -62,7 +62,7 @@ const MCQ = ({ game }: Props) => {
       mutationFn: async () => {
         const payload: z.infer<typeof checkAnswerSchema> = {
           questionId: currentQuestion.id,
-          userInput: options[selectedChoice],
+          userAnswer: options[selectedChoice],
         };
         const response = await axios.post(`/api/checkAnswer`, payload);
         return response.data;
