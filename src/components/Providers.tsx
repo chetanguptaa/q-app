@@ -3,17 +3,27 @@
 import { SessionProvider } from 'next-auth/react';
 import React from 'react'
 import { 
-  ThemeProvider as NextThemeProvider, ThemeProvider 
+  ThemeProvider as NextThemeProvider,
 } from 'next-themes';
 import { type ThemeProviderProps } from 'next-themes/dist/types';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 const Providers = ({children, ...props}: ThemeProviderProps) => {
   return (
-    <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-        <SessionProvider>
-            {children}
-        </SessionProvider>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <NextThemeProvider 
+      attribute='class' 
+      defaultTheme='system' 
+      enableSystem
+      {...props}
+      >
+          <SessionProvider>
+              {children}
+          </SessionProvider>
+      </NextThemeProvider>
+    </QueryClientProvider>
   )
 }
 
