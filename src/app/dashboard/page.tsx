@@ -9,7 +9,7 @@ import React from 'react'
 type Props = {}
 
 export const metadata = {
-    title: "Dashboard | Quizzy",
+    title: "Dashboard | Wisdom",
     description: "Quiz yourself on anything!",
 };
 
