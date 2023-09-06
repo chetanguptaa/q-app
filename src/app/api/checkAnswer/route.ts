@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { checkAnswerSchema } from "@/schemas/form/quiz";
+import { checkAnswerSchema } from "@/schemas/questions"
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
