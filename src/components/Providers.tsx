@@ -6,7 +6,10 @@ import {
   ThemeProvider as NextThemeProvider,
 } from 'next-themes';
 import { type ThemeProviderProps } from 'next-themes/dist/types';
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { 
+  QueryClientProvider, 
+  QueryClient 
+} from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
 
