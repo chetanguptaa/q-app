@@ -1,16 +1,11 @@
 'use client'
 
-import { useRouter } from 'next/navigation';
-import React from 'react'
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardContent 
-} from '../ui/card';
-import { History } from 'lucide-react';
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
+import { History } from "lucide-react";
 
-type Props = {}
+type Props = {};
 
 const HistoryCard = (props: Props) => {
   const router = useRouter();
@@ -31,7 +26,7 @@ const HistoryCard = (props: Props) => {
         </p>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default HistoryCard
+export default HistoryCard;
