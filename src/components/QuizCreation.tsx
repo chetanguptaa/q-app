@@ -28,12 +28,26 @@ import {
 } from './ui/form';
 import { Input } from './ui/input';
 import { Separator } from './ui/separator';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 type Props = {}
 
 type Input = z.infer<typeof quizCreationSchema>
 
 const QuizCreation = (props: Props) => {
+  const router = useRouter();
+  const { mutate: getQuestions, isLoading } = useMutation({
+    mutationFn: async ({ amount, topic, type }: Input)=> {
+      const response = await axios.post('/api/game', {
+        amount,
+        topic,
+        type
+      })
+      return response.data;
+    }
+  });
   const form = useForm<Input>({
     resolver: zodResolver(quizCreationSchema),
     defaultValues: {
@@ -43,7 +57,19 @@ const QuizCreation = (props: Props) => {
     }
   })
   function onSubmit(input: Input) {
-
+    getQuestions({
+      amount: input.amount,
+      topic: input.topic,
+      type: input.type,
+    }, {
+      onSuccess: ({ gameId }: { gameId: string }) => {
+        if(form.getValues('type') =='open_ended') {
+          router.push(`/play/open_ended/${gameId}`);
+        } else {
+          router.push(`/play/mcq/${gameId}`);
+        }
+      }
+    })
   }
   form.watch();
   return (
@@ -127,7 +153,7 @@ const QuizCreation = (props: Props) => {
                   <BookOpen className="w-4 h-4 mr-2" /> Open Ended
                 </Button>
               </div>
-              <Button type="submit">
+              <Button type="submit" disabled={isLoading}>
                 Submit
               </Button>
             </form>
