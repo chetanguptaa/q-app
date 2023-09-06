@@ -1,77 +1,95 @@
-'use client'
+"use client";
+import { quizCreationSchema } from "@/schemas/forms/quiz";
+import React from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { BookOpen, CopyCheck } from "lucide-react";
+import { Separator } from "../ui/separator";
+import axios, { AxiosError } from "axios";
+import { useMutation } from "@tanstack/react-query";
+import { useToast } from "../ui/use-toast";
+import { useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import LoadingQuestions from "../LoadingQuestions";
 
-import React from 'react'
-import { Button } from './ui/button';
-import { 
-    CopyCheck, 
-    BookOpen 
-} from 'lucide-react';
-import { 
-    Card, 
-    CardHeader, 
-    CardTitle, 
-    CardDescription, 
-    CardContent } 
-from './ui/card';
-import { useForm } from 'react-hook-form';
-import { quizCreationSchema } from '@/schemas/form/quiz';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod'
-import { 
-    Form, 
-    FormControl, 
-    FormDescription, 
-    FormField, 
-    FormItem, 
-    FormLabel, 
-    FormMessage 
-} from './ui/form';
-import { Input } from './ui/input';
-import { Separator } from './ui/separator';
-import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
+type Props = {
+  topic: string;
+};
 
-type Props = {}
+type Input = z.infer<typeof quizCreationSchema>;
 
-type Input = z.infer<typeof quizCreationSchema>
-
-const QuizCreation = (props: Props) => {
+const QuizCreation = ({ topic: topicParam }: Props) => {
   const router = useRouter();
+  const [showLoader, setShowLoader] = React.useState(false);
+  const [finishedLoading, setFinishedLoading] = React.useState(false);
+  const { toast } = useToast();
   const { mutate: getQuestions, isLoading } = useMutation({
-    mutationFn: async ({ amount, topic, type }: Input)=> {
-      const response = await axios.post('/api/game', {
-        amount,
-        topic,
-        type
-      })
+    mutationFn: async ({ amount, topic, type }: Input) => {
+      const response = await axios.post("/api/game", { amount, topic, type });
       return response.data;
-    }
+    },
   });
+
   const form = useForm<Input>({
     resolver: zodResolver(quizCreationSchema),
     defaultValues: {
+      topic: topicParam,
+      type: "mcq",
       amount: 3,
-      topic: '',
-      type: 'mcq',
-    }
-  })
-  function onSubmit(input: Input) {
-    getQuestions({
-      amount: input.amount,
-      topic: input.topic,
-      type: input.type,
-    }, {
-      onSuccess: ({ gameId }: { gameId: string }) => {
-        if(form.getValues('type') =='open_ended') {
-          router.push(`/play/open_ended/${gameId}`);
-        } else {
-          router.push(`/play/mcq/${gameId}`);
+    },
+  });
+
+  const onSubmit = async (data: Input) => {
+    setShowLoader(true);
+    getQuestions(data, {
+      onError: (error) => {
+        setShowLoader(false);
+        if (error instanceof AxiosError) {
+          if (error.response?.status === 500) {
+            toast({
+              title: "Error",
+              description: "Something went wrong. Please try again later.",
+              variant: "destructive",
+            });
+          }
         }
-      }
-    })
-  }
+      },
+      onSuccess: ({ gameId }: { gameId: string }) => {
+        setFinishedLoading(true);
+        setTimeout(() => {
+          if (form.getValues("type") === "mcq") {
+            router.push(`/play/mcq/${gameId}`);
+          } else if (form.getValues("type") === "open_ended") {
+            router.push(`/play/open-ended/${gameId}`);
+          }
+        }, 2000);
+      },
+    });
+  };
   form.watch();
+
+  if (showLoader) {
+    return <LoadingQuestions finished={finishedLoading} />;
+  }
+
   return (
     <div className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
       <Card>
@@ -153,7 +171,7 @@ const QuizCreation = (props: Props) => {
                   <BookOpen className="w-4 h-4 mr-2" /> Open Ended
                 </Button>
               </div>
-              <Button type="submit" disabled={isLoading}>
+              <Button disabled={isLoading} type="submit">
                 Submit
               </Button>
             </form>
@@ -161,7 +179,7 @@ const QuizCreation = (props: Props) => {
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default QuizCreation
+export default QuizCreation;
