@@ -1,12 +1,12 @@
-import QuizCreation from '@/components/forms/QuizCreation'
-import { getAuthSession } from '@/lib/nextauth'
-import { redirect } from 'next/navigation'
-import React from 'react'
+import QuizCreation from "@/components/forms/QuizCreation";
+import { getAuthSession } from "@/lib/nextauth";
+import { redirect } from "next/navigation";
+import React from "react";
 
 export const metadata = {
-  title : 'Wacky',
+  title: "Quiz",
   description: "Quiz yourself on anything!",
-}
+};
 
 interface Props {
   searchParams: {
@@ -16,12 +16,10 @@ interface Props {
 
 const Quiz = async ({ searchParams }: Props) => {
   const session = await getAuthSession();
-  if(!session?.user) {
-    redirect('/');
+  if (!session?.user) {
+    redirect("/");
   }
-  return (
-    <QuizCreation topic={searchParams.topic ?? ""}/>
-  )
-}
+  return <QuizCreation topic={searchParams.topic ?? ""} />;
+};
 
-export default Quiz
+export default Quiz;

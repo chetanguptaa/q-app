@@ -1,7 +1,7 @@
-import OpenAI from 'openai';
+import OpenAI from "openai";
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 interface OutputFormat {
@@ -65,7 +65,8 @@ export async function strict_output(
         { role: "user", content: user_prompt.toString() },
       ],
     });
-    let res: string = response.choices[0].message?.content?.replace(/'/g, '"') ?? "";
+    let res: string =
+      response.choices[0].message?.content?.replace(/'/g, '"') ?? "";
 
     // ensure that we don't replace away apostrophes in text
     res = res.replace(/(\w)"(\w)/g, "$1'$2");

@@ -1,11 +1,9 @@
-import React from 'react'
+import React from "react";
 
-type Props = {}
+type Props = {};
 
 const History = (props: Props) => {
-  return (
-    <div>History</div>
-  )
-}
+  return <div>History</div>;
+};
 
-export default History
+export default History;
