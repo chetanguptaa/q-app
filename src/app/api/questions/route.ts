@@ -54,19 +54,11 @@ export async function POST(req: Request, res: Response) {
     );
   } catch (error) {
     if (error instanceof ZodError) {
-      return NextResponse.json(
-        { error: error.issues },
-        {
-          status: 400,
-        }
-      );
+      return NextResponse.json({ error: error.issues }, { status: 400 });
     } else {
-      console.error("elle gpt error", error);
       return NextResponse.json(
-        { error: "An unexpected error occurred." },
-        {
-          status: 500,
-        }
+        { error: "Internal Server error" },
+        { status: 500 }
       );
     }
   }

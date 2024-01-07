@@ -18,7 +18,6 @@ export async function POST(req: Request, res: Response) {
     }
     const body = await req.json();
     const { topic, type, amount } = quizCreationSchema.parse(body);
-    console.log(prisma.game)
     const game = await prisma.game.create({
       data: {
         gameType: type,
@@ -41,15 +40,14 @@ export async function POST(req: Request, res: Response) {
         },
       },
     });
+    const API_URL = process.env.API_URL as string;
+    const { data } = await axios.post(`${API_URL}/api/questions`, {
+      amount,
+      topic,
+      type,
+    });
 
-    const { data } = await axios.post(
-      `${process.env.API_URL as string}/api/questions`,
-      {
-        amount,
-        topic,
-        type,
-      }
-    );
+    console.log("data: ", data);
 
     if (type === "mcq") {
       type mcqQuestion = {
@@ -107,10 +105,10 @@ export async function POST(req: Request, res: Response) {
       );
     } else {
       return NextResponse.json(
-        { error: "An unexpected error occurred." },
         {
-          status: 500,
-        }
+          error: "Internal server error",
+        },
+        { status: 500 }
       );
     }
   }
